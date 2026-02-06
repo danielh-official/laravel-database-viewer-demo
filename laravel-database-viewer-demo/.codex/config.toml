@@ -1,0 +1,4 @@
+[mcp_servers.laravel-boost]
+command = "php"
+args = ["artisan", "boost:mcp"]
+cwd = "/Volumes/CrucialX9ProForMac/Repos/testing-laravel-database-viewers/.vendor/laravel-database-viewer-demo/laravel-database-viewer-demo"

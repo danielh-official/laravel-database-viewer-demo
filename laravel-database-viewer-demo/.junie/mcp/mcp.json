@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/opt/homebrew/Cellar/php/8.5.2/bin/php",
+            "args": [
+                "/Volumes/CrucialX9ProForMac/Repos/testing-laravel-database-viewers/.vendor/laravel-database-viewer-demo/laravel-database-viewer-demo/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}
