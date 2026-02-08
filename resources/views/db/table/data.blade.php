@@ -1,4 +1,4 @@
-<x-layout.db :tables="$tables" :selectedTable="$table">
+<x-layout.db :tables="$tables" :selectedTable="$table" title="Data | {{ $table }} Table">
     <x-layout.db.table :table="$table">
         <div class="flex gap-x-2">
             <form id="reset-form" class="mb-4">

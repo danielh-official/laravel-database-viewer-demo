@@ -1,4 +1,4 @@
-<x-layout.db :tables="$tables" :selectedTable="$table">
+<x-layout.db :tables="$tables" :selectedTable="$table" title="Info | {{ $table }} Table">
     <x-layout.db.table :table="$table">
         <h2 class="text-2xl font-semibold">
             Table Info

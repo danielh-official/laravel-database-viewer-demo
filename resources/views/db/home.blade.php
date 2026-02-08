@@ -3,7 +3,7 @@
     $json = '<pre>' . htmlspecialchars($connectionDetails) . '</pre>';
 @endphp
 
-<x-layout.db :tables="$tables">
+<x-layout.db :tables="$tables" title="Home">
     <div class="p-4 flex flex-col gap-4">
         <span class="font-mono text-sm text-gray-700 dark:text-gray-300">
             {!! $json !!}

@@ -1,4 +1,4 @@
-<x-layout.db :tables="$tables">
+<x-layout.db :tables="$tables" title="SQL">
     <div class="p-4 text-center">
         <form action="{{ route('db.sql.execute') }}" method="POST">
             @csrf

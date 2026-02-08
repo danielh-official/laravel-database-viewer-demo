@@ -1,4 +1,4 @@
-<x-layout.db :tables="$tables" :selectedTable="$table">
+<x-layout.db :tables="$tables" :selectedTable="$table" title="Structure | {{ $table }} Table">
     <x-layout.db.table :table="$table">
         {{-- This should be a table with the following fields: Name, Type, Collation, Nullable, Default, Auto Increment, Comment, Generation --}}
         <h2 class="text-2xl font-semibold">
