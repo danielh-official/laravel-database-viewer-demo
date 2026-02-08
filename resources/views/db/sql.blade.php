@@ -2,7 +2,7 @@
     <div class="p-4 text-center">
         <form action="{{ route('db.sql.execute') }}" method="POST">
             @csrf
-            <textarea name="query" rows="10" class="w-full p-2 border border-gray-300 rounded"
+            <textarea name="query" rows="2" class="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your SQL query here...">{{ $query ?? '' }}</textarea>
             <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Execute</button>
         </form>
