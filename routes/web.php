@@ -6,20 +6,28 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/db', function () {
-    $tables = \DB::connection()->getSchemaBuilder()->getTables();
+Route::name('db.')->prefix('db')->group(function () {
+    Route::get('/', function () {
+        $tables = \DB::connection()->getSchemaBuilder()->getTables();
 
-    return view('db.home', compact('tables'));
-})->name('db.home');
+        return view('db.home', compact('tables'));
+    })->name('home');
 
-Route::get('/db/table/{table}', function (Illuminate\Http\Request $request, $table) {
-    $tables = \DB::connection()->getSchemaBuilder()->getTables();
+    Route::get('sql', function () {
+        $tables = \DB::connection()->getSchemaBuilder()->getTables();
 
-    $columns = \DB::connection()->getSchemaBuilder()->getColumnListing($table);
+        return view('db.sql', compact('tables'));
+    })->name('sql');
 
-    $currentPage = $request->input('page', 1);
+    Route::get('/table/{table}', function (Illuminate\Http\Request $request, $table) {
+        $tables = \DB::connection()->getSchemaBuilder()->getTables();
 
-    $rows = \DB::table($table)->paginate(15, ['*'], 'page', $currentPage);
+        $columns = \DB::connection()->getSchemaBuilder()->getColumnListing($table);
 
-    return view('db.table', compact('tables', 'table', 'columns', 'rows'));
-})->name('db.table');
+        $currentPage = $request->input('page', 1);
+
+        $rows = \DB::table($table)->paginate(15, ['*'], 'page', $currentPage);
+
+        return view('db.table', compact('tables', 'table', 'columns', 'rows'));
+    })->name('table');
+});
