@@ -122,5 +122,23 @@ Route::name('db.')->prefix('db')->group(function () {
 
             return view('db.table.info', compact('tables', 'table', 'columns', 'foreignKeys', 'indexes', 'rowCount', 'engine', 'collation', 'comment', 'createQuery'));
         })->name('info');
+
+        Route::get('/insert', function ($table) {
+            $tables = \DB::connection()->getSchemaBuilder()->getTables();
+
+            $columns = Schema::getColumns($table);
+
+            return view('db.table.insert', compact('tables', 'table', 'columns'));
+        })->name('insert');
+
+        Route::post('/insert', function ($table, \Illuminate\Http\Request $request) {
+            $columns = Schema::getColumns($table);
+
+            $data = $request->only(array_map(fn ($column) => $column['name'], $columns));
+
+            \DB::table($table)->insert($data);
+
+            return redirect()->route('db.table.data', ['table' => $table]);
+        })->name('insert.post');
     });
 });
