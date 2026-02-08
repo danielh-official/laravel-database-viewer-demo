@@ -140,5 +140,41 @@ Route::name('db.')->prefix('db')->group(function () {
 
             return redirect()->route('db.table.data', ['table' => $table]);
         })->name('insert.post');
+
+        Route::name('data.row.')->prefix('data/row/{id}')->group(function () {
+            Route::get('/', function ($table, $id) {
+                $tables = \DB::connection()->getSchemaBuilder()->getTables();
+
+                $row = \DB::table($table)->find($id);
+
+                return view('db.table.data.row.show', compact('tables', 'table', 'row'));
+            })->name('show');
+
+            Route::get('/edit', function ($table, $id) {
+                $tables = \DB::connection()->getSchemaBuilder()->getTables();
+
+                $columns = Schema::getColumns($table);
+
+                $row = \DB::table($table)->find($id);
+
+                return view('db.table.data.row.edit', compact('tables', 'table', 'columns', 'row'));
+            })->name('edit');
+
+            Route::patch('/update', function ($table, $id, \Illuminate\Http\Request $request) {
+                $columns = Schema::getColumns($table);
+
+                $data = $request->only(array_map(fn ($column) => $column['name'], $columns));
+
+                \DB::table($table)->where('id', $id)->update($data);
+
+                return redirect()->route('db.table.data.row.show', ['table' => $table, 'id' => $id]);
+            })->name('update');
+
+            Route::delete('/delete', function ($table, $id) {
+                \DB::table($table)->where('id', $id)->delete();
+
+                return redirect()->back();
+            })->name('delete');
+        });
     });
 });

@@ -68,22 +68,30 @@
         </h2>
         <form action="{{ route('db.table.insert', ['table' => $table]) }}" method="POST">
             @csrf
-            @foreach ($columns as $column)
-                @if (!($column['auto_increment'] ?? false))
-                    <div class="mb-4">
-                        <label for="{{ $column['name'] }}" class="block text-sm font-medium text-gray-700">
-                            {{ $column['name'] }}
-                            @if (!($column['nullable'] ?? false))
-                                <span class="text-red-500">*</span>
-                            @endif
-                        </label>
-                        <input type="{{ sql_to_html_input_type($column['type']) }}" name="{{ $column['name'] }}"
-                            id="{{ $column['name'] }}"  @required(!($column['nullable'] ?? false))
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-                    </div>
-                @endif
-            @endforeach
-            <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Insert</button>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($columns as $column)
+                    @if (!($column['auto_increment'] ?? false))
+                        <div class="mb-4">
+                            <label for="{{ $column['name'] }}" class="block text-sm font-medium text-gray-700">
+                                {{ $column['name'] }}
+                                @if (!($column['nullable'] ?? false))
+                                    <span class="text-red-500">*</span>
+                                @endif
+                            </label>
+                            <input type="{{ sql_to_html_input_type($column['type']) }}" name="{{ $column['name'] }}"
+                                id="{{ $column['name'] }}" @required(!($column['nullable'] ?? false))
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                autocomplete="off" />
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+            <div class="mt-4 flex items-center justify-end">
+                <button type="submit"
+                    class="rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800">
+                    Insert
+                </button>
+            </div>
         </form>
     </x-layout.db.table>
 </x-layout.db>
