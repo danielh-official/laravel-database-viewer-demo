@@ -21,6 +21,16 @@ Route::name('db.')->prefix('db')->group(function () {
         return view('db.sql', compact('tables'));
     })->name('sql');
 
+    Route::post('sql/execute', function (Illuminate\Http\Request $request) {
+        $tables = \DB::connection()->getSchemaBuilder()->getTables();
+
+        $query = $request->input('query');
+
+        $results = \DB::select($query);
+
+        return view('db.sql', compact('tables', 'results', 'query'));
+    })->name('sql.execute');
+
     Route::name('table.')->prefix('/table/{table}')->group(function () {
         Route::get('/data', function (Illuminate\Http\Request $request, $table) {
             $tables = \DB::connection()->getSchemaBuilder()->getTables();
