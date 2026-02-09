@@ -1,14 +1,16 @@
 <x-layout.db :tables="$tables" title="SQL">
     <div class="p-4 text-center">
-        <form action="{{ route('db.sql.execute') }}" method="POST">
-            @csrf
+        <form action="{{ route('db.sql') }}" method="GET">
             <textarea name="query" rows="2" class="w-full p-2 border border-gray-300 rounded"
-                placeholder="Enter your SQL query here...">{{ $query ?? '' }}</textarea>
+                placeholder="Enter your SQL query here...">{{ old('query') ?? $query }}</textarea>
+            @error('query')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
             <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Execute</button>
         </form>
     </div>
     <div class="w-full overflow-x-auto">
-        @if (isset($results))
+        @if (isset($results) && count($results) > 0)
             <table class="table-auto border-collapse border border-gray-300">
                 <thead>
                     <tr>
@@ -27,6 +29,8 @@
                     @endforeach
                 </tbody>
             </table>
+        @elseif ($query)
+            <p class="text-gray-500 text-sm mt-2 text-center">No results found.</p>
         @endif
     </div>
 </x-layout.db>

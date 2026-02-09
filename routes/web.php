@@ -15,21 +15,26 @@ Route::name('db.')->prefix('db')->group(function () {
         return view('db.home', compact('tables', 'connectionDetails'));
     })->name('home');
 
-    Route::get('sql', function () {
+    Route::get('sql', function (Illuminate\Http\Request $request) {
         $tables = \DB::connection()->getSchemaBuilder()->getTables();
 
-        return view('db.sql', compact('tables'));
-    })->name('sql');
+        $request->validate([
+            'query' => 'required|string',
+        ]);
 
-    Route::post('sql/execute', function (Illuminate\Http\Request $request) {
         $tables = \DB::connection()->getSchemaBuilder()->getTables();
 
         $query = $request->input('query');
 
-        $results = \DB::select($query);
+        try {
+            $results = \DB::select($query);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['query' => $e->getMessage()]);
+        }
 
-        return view('db.sql', compact('tables', 'results', 'query'));
-    })->name('sql.execute');
+        return view('db.sql', compact('tables', 'query', 'results'));
+    })->name('sql');
 
     Route::name('table.')->prefix('/table/{table}')->group(function () {
         Route::get('/data', function (Illuminate\Http\Request $request, $table) {
