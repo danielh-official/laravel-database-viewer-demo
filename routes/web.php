@@ -183,7 +183,7 @@ Route::name('db.')->prefix('db')->group(function () {
             Route::get('/', function ($table, $id) {
                 $tables = \DB::connection()->getSchemaBuilder()->getTables();
 
-                $row = \DB::table($table)->find($id);
+                $row = \DB::table($table)->whereId($id)->orWhere('key', $id)->first();
 
                 return view('db.table.data.row.show', compact('tables', 'table', 'row'));
             })->name('show');
@@ -193,7 +193,7 @@ Route::name('db.')->prefix('db')->group(function () {
 
                 $columns = Schema::getColumns($table);
 
-                $row = \DB::table($table)->find($id);
+                $row = \DB::table($table)->whereId($id)->orWhere('key', $id)->first();
 
                 return view('db.table.data.row.edit', compact('tables', 'table', 'columns', 'row'));
             })->name('edit');
@@ -247,13 +247,13 @@ Route::name('db.')->prefix('db')->group(function () {
 
                 $request->validate($validationRules);
 
-                \DB::table($table)->where('id', $id)->update($data);
+                \DB::table($table)->where('id', $id)->orWhere('key', $id)->update($data);
 
                 return redirect()->route('db.table.data.row.show', ['table' => $table, 'id' => $id]);
             })->name('update');
 
             Route::delete('/delete', function ($table, $id) {
-                \DB::table($table)->where('id', $id)->delete();
+                \DB::table($table)->where('id', $id)->orWhere('key', $id)->delete();
 
                 return redirect()->back();
             })->name('delete');

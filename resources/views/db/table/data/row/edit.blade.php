@@ -62,10 +62,10 @@
 @endphp
 
 <x-layout.db :tables="$tables" :selectedTable="$table"
-    title="Edit | Row {{ $row->id ?? null }} | Data | {{ $table }} Table">
+    title="Edit | Row {{ $row->id ?? $row->key ?? null }} | Data | {{ $table }} Table">
     <x-layout.db.table :table="$table">
         <x-layout.db.table.data.row :table="$table" :row="$row">
-            <form action="{{ route('db.table.data.row.update', ['table' => $table, 'id' => $row->id]) }}" method="POST">
+            <form action="{{ route('db.table.data.row.update', ['table' => $table, 'id' => $row->id ?? $row->key]) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

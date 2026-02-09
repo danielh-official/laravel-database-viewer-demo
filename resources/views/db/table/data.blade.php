@@ -70,7 +70,9 @@
                         @foreach ($columns as $column)
                             <th class="border border-gray-300 px-4 py-2">{{ $column }}</th>
                         @endforeach
-                        <th class="border border-gray-300 px-4 py-2">Actions</th>
+                        @if (isset($rows[0]->id) || isset($rows[0]->key))
+                            <th class="border border-gray-300 px-4 py-2">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -87,22 +89,24 @@
                                     <td class="border border-gray-300 px-4 py-2 text-gray-400">NULL</td>
                                 @endif
                             @endforeach
-                            <td class="border border-gray-300 px-4 py-2">
-                                <a href="{{ route('db.table.data.row.show', ['table' => $table, 'id' => $row->id]) }}"
-                                    class="text-blue-500 hover:underline">View</a>
-                                <a href="{{ route('db.table.data.row.edit', ['table' => $table, 'id' => $row->id]) }}"
-                                    class="text-yellow-500 hover:underline">Edit</a>
-                                <form
-                                    action="{{ route('db.table.data.row.delete', ['table' => $table, 'id' => $row->id]) }}"
-                                    method="POST" class="inline"
-                                    onsubmit="return confirm('Are you sure you want to delete this row?');">
+                            @if (isset($row->id) || isset($row->key))
+                                <td class="border border-gray-300 px-4 py-2">
+                                    <a href="{{ route('db.table.data.row.show', ['table' => $table, 'id' => $row->id ?? $row->key]) }}"
+                                        class="text-blue-500 hover:underline">View</a>
+                                    <a href="{{ route('db.table.data.row.edit', ['table' => $table, 'id' => $row->id ?? $row->key]) }}"
+                                        class="text-yellow-500 hover:underline">Edit</a>
+                                    <form
+                                        action="{{ route('db.table.data.row.delete', ['table' => $table, 'id' => $row->id ?? $row->key]) }}"
+                                        method="POST" class="inline"
+                                        onsubmit="return confirm('Are you sure you want to delete this row?');">
 
-                                    @csrf
-                                    @method('DELETE')
+                                        @csrf
+                                        @method('DELETE')
 
-                                    <button type="submit" class="text-red-500 hover:underline">Delete</button>
-                                </form>
-                            </td>
+                                        <button type="submit" class="text-red-500 hover:underline">Delete</button>
+                                    </form>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
