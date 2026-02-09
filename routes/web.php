@@ -18,8 +18,14 @@ Route::name('db.')->prefix('db')->group(function () {
     Route::get('sql', function (Illuminate\Http\Request $request) {
         $tables = \DB::connection()->getSchemaBuilder()->getTables();
 
+        if (empty($request->input('query'))) {
+            $query = '';
+            $results = [];
+            return view('db.sql', compact('tables', 'query', 'results'));
+        }
+
         $request->validate([
-            'query' => 'required|string',
+            'query' => 'string',
         ]);
 
         $tables = \DB::connection()->getSchemaBuilder()->getTables();
@@ -35,6 +41,30 @@ Route::name('db.')->prefix('db')->group(function () {
 
         return view('db.sql', compact('tables', 'query', 'results'));
     })->name('sql');
+
+    Route::post('sql/results/export', function () {
+        $query = request()->input('query');
+
+        try {
+            $results = \DB::select($query);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['query' => $e->getMessage()]);
+        }
+
+        // Export logic here (e.g., CSV, Excel)
+        $filename = 'export.csv';
+        $handle = fopen($filename, 'w+');
+        fputcsv($handle, array_keys((array) $results[0]));
+
+        foreach ($results as $row) {
+            fputcsv($handle, (array) $row);
+        }
+
+        fclose($handle);
+
+        return response()->download($filename)->deleteFileAfterSend(true);
+    })->name('sql.results.export');
 
     Route::name('table.')->prefix('/table/{table}')->group(function () {
         Route::get('/data', function (Illuminate\Http\Request $request, $table) {
