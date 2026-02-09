@@ -6096,7 +6096,7 @@
             "dist": {
                 "type": "path",
                 "url": "../laravel-database-gui",
-                "reference": "2fdb6befbf8bc76ec41da65868ec8f3867574580"
+                "reference": "41ed3520f554701ddb4a302a64d4ac5ba8b6da39"
             },
             "require": {
                 "illuminate/contracts": "^11.0||^12.0",
@@ -6131,10 +6131,7 @@
                 "psr-4": {
                     "DanielHOfficial\\LaravelDatabaseGui\\": "src/",
                     "DanielHOfficial\\LaravelDatabaseGui\\Database\\Factories\\": "database/factories/"
-                },
-                "files": [
-                    "src/helpers.php"
-                ]
+                }
             },
             "autoload-dev": {
                 "psr-4": {
@@ -6177,6 +6174,7 @@
             "keywords": [
                 "Daniel Haven",
                 "database",
+                "dev",
                 "laravel",
                 "laravel-database-gui"
             ],
