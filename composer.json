@@ -14,6 +14,7 @@
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
+        "danielh-official/laravel-database-gui": "*",
         "fakerphp/faker": "^1.23",
         "laravel/boost": "^2.1",
         "laravel/pail": "^1.2.2",
@@ -87,6 +88,12 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../laravel-database-gui"
+        }
+    ]
 }
