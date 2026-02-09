@@ -131,15 +131,53 @@ Route::name('db.')->prefix('db')->group(function () {
             return view('db.table.insert', compact('tables', 'table', 'columns'));
         })->name('insert');
 
-        Route::post('/insert', function ($table, \Illuminate\Http\Request $request) {
+        Route::post('/insert', function (\Illuminate\Http\Request $request, $table) {
             $columns = Schema::getColumns($table);
 
             $data = $request->only(array_map(fn ($column) => $column['name'], $columns));
 
+            $validationRules = [];
+
+            $foreignKeys = Schema::getForeignKeys($table);
+
+            // Check if any of the columns are foreign keys and validate the referenced IDs
+            foreach ($foreignKeys as $foreignKey) {
+                $referencedTable = $foreignKey['foreign_table'];
+                $referencedColumn = $foreignKey['foreign_columns'][0];
+                $column = $foreignKey['columns'][0];
+                $value = $data[$column] ?? null;
+
+                if (isset($validationRules[$column])) {
+                    $validationRules[$column][] = ["exists:{$referencedTable},{$referencedColumn}"];
+                } else {
+                    $validationRules[$column] = ["exists:{$referencedTable},{$referencedColumn}"];
+                }
+            }
+
+            $indexes = collect(Schema::getIndexes($table));
+
+            // Check if any of the columns have a unique constraint and validate the values
+            foreach ($columns as $column) {
+                $columnName = $column['name'];
+                $indexes->filter(function ($index) use ($columnName) {
+                    $indexColumnName = $index['columns'][0];
+
+                    return $indexColumnName === $columnName && $index['unique'];
+                })->each(function ($index) use ($columnName, $table, &$validationRules) {
+                    if (isset($validationRules[$columnName])) {
+                        $validationRules[$columnName][] = ["unique:{$table},{$columnName}"];
+                    } else {
+                        $validationRules[$columnName] = ["unique:{$table},{$columnName}"];
+                    }
+                });
+            }
+
+            $request->validate($validationRules);
+
             \DB::table($table)->insert($data);
 
             return redirect()->route('db.table.data', ['table' => $table]);
-        })->name('insert.post');
+        })->name('store');
 
         Route::name('data.row.')->prefix('data/row/{id}')->group(function () {
             Route::get('/', function ($table, $id) {
@@ -164,6 +202,50 @@ Route::name('db.')->prefix('db')->group(function () {
                 $columns = Schema::getColumns($table);
 
                 $data = $request->only(array_map(fn ($column) => $column['name'], $columns));
+
+                $validationRules = [];
+
+                $foreignKeys = Schema::getForeignKeys($table);
+
+                // Check if any of the columns are foreign keys and validate the referenced IDs
+                foreach ($foreignKeys as $foreignKey) {
+                    $referencedTable = $foreignKey['foreign_table'];
+                    $referencedColumn = $foreignKey['foreign_columns'][0];
+                    $column = $foreignKey['columns'][0];
+                    $value = $data[$column] ?? null;
+
+                    if (isset($validationRules[$column])) {
+                        $validationRules[$column][] = ["exists:{$referencedTable},{$referencedColumn}"];
+                    } else {
+                        $validationRules[$column] = ["exists:{$referencedTable},{$referencedColumn}"];
+                    }
+                }
+
+                $indexes = collect(Schema::getIndexes($table));
+
+                // Check if any of the columns have a unique constraint and validate the values
+                foreach ($columns as $column) {
+                    $columnName = $column['name'];
+                    $indexes->filter(function ($index) use ($columnName) {
+                        $indexColumnName = $index['columns'][0];
+
+                        return $indexColumnName === $columnName && $index['unique'];
+                    })->each(function ($index) use ($columnName, $table, &$validationRules, $id) {
+                        if (isset($validationRules[$columnName])) {
+                            $validationRules[$columnName][] = [
+                                \Illuminate\Validation\Rule::unique($table, $columnName)->ignore($id),
+                            ];
+                        } else {
+                            $validationRules[$columnName] = [
+                                \Illuminate\Validation\Rule::unique($table, $columnName)->ignore($id),
+                            ];
+                        }
+                    });
+                }
+
+                unset($validationRules['id']);
+
+                $request->validate($validationRules);
 
                 \DB::table($table)->where('id', $id)->update($data);
 

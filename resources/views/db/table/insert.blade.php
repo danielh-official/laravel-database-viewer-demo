@@ -66,7 +66,7 @@
         <h2 class="text-2xl font-semibold">
             Insert Data
         </h2>
-        <form action="{{ route('db.table.insert', ['table' => $table]) }}" method="POST">
+        <form action="{{ route('db.table.store', ['table' => $table]) }}" method="POST">
             @csrf
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($columns as $column)
@@ -82,6 +82,9 @@
                                 id="{{ $column['name'] }}" @required(!($column['nullable'] ?? false))
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 autocomplete="off" />
+                            @error($column['name'])
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     @endif
                 @endforeach
